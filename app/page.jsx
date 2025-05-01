@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchWeatherData, fetchAirQualityData } from "@/lib/api"; 
+import { fetchWeatherData, fetchAirQualityData } from "@/lib/api";
+import Navbar from "@/components/Navbar"; // ✅ Tambahkan ini
 import SearchBar from "@/components/SearchBar";
 import WeatherCard from "@/components/WeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
@@ -73,30 +74,41 @@ const HomePage = () => {
     }
   };
 
-return (
-  <div className="max-w-4xl mx-auto p-4 space-y-6">
-    <SearchBar 
-      onSearch={(newCity) => {
-        setCity(newCity);
-        setDisplayLocation(newCity);
-      }} 
-      onUseCurrentLocation={handleUseCurrentLocation} 
-    />
-    
-    {weather && (
-      <>
-        <WeatherCard weather={weather.currentConditions} />
-        <h2 className="text-xl font-semibold text-center text-gray-800">
-          📍 Lokasi saat ini: {displayLocation}
-        </h2>
-        {airQuality && <AirQualityCard airQuality={airQuality} />}
-        {airQuality && <HourlyAirQuality hourly={airQuality.hourly} />}
-        <HourlyForecast hours={weather.days[0]?.hours || []} />
-        <DailyForecast days={weather.days?.slice(0, 10) || []} />
-      </>
-    )}
-  </div>
-);
+  return (
+    <>
+      <Navbar /> {/* ✅ Tambahkan Navbar di atas */}
+      <main className="max-w-4xl mx-auto p-6 space-y-8 bg-gray-50 mt-6 rounded-lg shadow-md">
+        <SearchBar
+          onSearch={(newCity) => {
+            setCity(newCity);
+            setDisplayLocation(newCity);
+          }}
+          onUseCurrentLocation={handleUseCurrentLocation}
+        />
+
+        {weather && (
+          <>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Lokasi saat ini: <span className="text-blue-600">{displayLocation}</span>
+            </h2>
+
+            <div className="space-y-6">
+              <WeatherCard weather={weather.currentConditions} />
+              <HourlyForecast hours={weather.days[0]?.hours || []} />
+              <DailyForecast days={weather.days?.slice(0, 10) || []} />
+            </div>
+
+            {airQuality && (
+              <div className="space-y-6 mt-6">
+                <AirQualityCard airQuality={airQuality} />
+                <HourlyAirQuality hourly={airQuality.hourly} />
+              </div>
+            )}
+          </>
+        )}
+      </main>
+    </>
+  );
 };
 
 export default HomePage;

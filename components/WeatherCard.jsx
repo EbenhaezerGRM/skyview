@@ -5,23 +5,35 @@ const WeatherCard = ({ weather }) => {
   const { temp, feelslike, windspeed, humidity, conditions, icon, resolvedAddress } = weather;
 
   return (
-    <div className="p-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg text-white">
-      <h2 className="text-2xl font-semibold mb-1">Current Weather</h2>
-      <h3 className="text-md mb-4">{resolvedAddress}</h3>
-      <div className="flex items-center space-x-6">
-        <span className="text-6xl">{weatherIcons[icon]}</span>
-        <div>
-          <p className="text-4xl font-bold">{temp}°C</p>
-          <p className="text-lg">Feels like: {feelslike}°C</p>
-          <p className="text-lg capitalize">{conditions}</p>
+    <div className="p-6 md:p-8 rounded-2xl shadow-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="text-6xl md:text-7xl">{weatherIcons[icon]}</div>
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-1">{resolvedAddress}</h2>
+            <p className="text-sm text-white/80 capitalize">{conditions}</p>
+          </div>
+        </div>
+
+        <div className="text-center w-full md:w-auto mt-4 md:mt-0">
+          <p className="text-5xl font-extrabold">{temp}°C</p>
+          <p className="text-md text-white/80">Feels like {feelslike}°C</p>
         </div>
       </div>
-      <div className="mt-6 space-y-2">
-        <p className="text-lg">🌬️ Wind: {windspeed} km/h</p>
-        <p className="text-lg">💧 Humidity: {humidity}%</p>
+
+      <div className="mt-6 grid grid-cols-2 md:grid-cols-2 gap-4 text-white text-sm">
+        <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl shadow-md">
+          <p className="font-semibold">🌬️ Kecepatan Angin</p>
+          <p>{windspeed} km/h</p>
+        </div>
+        <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl shadow-md">
+          <p className="font-semibold">💧 Kelembapan</p>
+          <p>{humidity}%</p>
+        </div>
       </div>
-      <div className="mt-6 p-4 bg-white bg-opacity-10 rounded-lg">
-        <p className="text-lg">🔹 {getHealthRecommendation(icon)}</p>
+
+      <div className="mt-6 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20">
+        <p className="text-sm md:text-base">🔹 {getHealthRecommendation(icon)}</p>
       </div>
     </div>
   );

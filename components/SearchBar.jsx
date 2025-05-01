@@ -1,38 +1,51 @@
 "use client";
 import { useState } from "react";
 
-const SearchBar = ({ onSearch, onUseCurrentLocation }) => {
+const SearchBar = ({ onSearch, onUseCurrentLocation, currentLocation }) => {
   const [city, setCity] = useState("");
 
   const handleSearch = () => {
     if (city.trim()) {
       onSearch(city);
+      setCity(""); // Kosongkan input setelah pencarian
     }
   };
 
+  const handleUseCurrentLocation = async () => {
+    await onUseCurrentLocation();
+    setCity(""); // Kosongkan input setelah menggunakan lokasi saat ini
+  };
+
   return (
-    <div className="flex flex-col items-center space-y-3 mb-6">
-      <div className="flex w-full space-x-2">
+    <div className="flex flex-col items-center gap-6 mb-8 w-full px-4 sm:px-8">
+      <div className="flex flex-col sm:flex-row w-full max-w-4xl gap-4">
         <input
           type="text"
-          placeholder="Cari kota..."
+          placeholder="🔍 Cari kota atau lokasi..."
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          className="p-3 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-800 shadow-sm"
         />
         <button
           onClick={handleSearch}
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+          className="w-full sm:w-auto px-5 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md"
         >
           Cari
         </button>
+        <button
+          onClick={handleUseCurrentLocation}
+          className="w-full sm:w-auto px-5 py-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors shadow-md"
+        >
+          Lokasi Saya
+        </button>
       </div>
-      <button
-        onClick={onUseCurrentLocation}
-        className="text-blue-500 underline hover:text-blue-600 transition"
-      >
-        Gunakan Lokasi Saya
-      </button>
+
+      {/* Lokasi saat ini */}
+      {currentLocation && (
+        <div className="text-sm text-gray-600 mt-2 text-center sm:text-left">
+          Lokasi saat ini: <span className="font-semibold">{currentLocation}</span>
+        </div>
+      )}
     </div>
   );
 };
