@@ -40,7 +40,6 @@ const HourlyAirQuality = ({ hourly }) => {
                 </span>
               </div>
 
-              {/* AQI and Status */}
               <div className="flex flex-col items-start gap-2 mt-2 md:mt-4">
                 <span
                   className={`text-xs px-2 py-1 rounded-full font-medium ${info.color}`}
@@ -51,7 +50,6 @@ const HourlyAirQuality = ({ hourly }) => {
 
               <hr className="my-2" />
 
-              {/* Other Air Quality Data */}
               <div className="space-y-1 text-sm text-gray-700">
                 <div className="flex items-center gap-2">
                   <FaSmog className="text-blue-500" />

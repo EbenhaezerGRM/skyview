@@ -7,13 +7,13 @@ const SearchBar = ({ onSearch, onUseCurrentLocation, currentLocation }) => {
   const handleSearch = () => {
     if (city.trim()) {
       onSearch(city);
-      setCity(""); // Kosongkan input setelah pencarian
+      setCity(""); 
     }
   };
 
   const handleUseCurrentLocation = async () => {
     await onUseCurrentLocation();
-    setCity(""); // Kosongkan input setelah menggunakan lokasi saat ini
+    setCity(""); 
   };
 
   return (
@@ -39,8 +39,7 @@ const SearchBar = ({ onSearch, onUseCurrentLocation, currentLocation }) => {
           Lokasi Saya
         </button>
       </div>
-
-      {/* Lokasi saat ini */}
+      
       {currentLocation && (
         <div className="text-sm text-gray-600 mt-2 text-center sm:text-left">
           Lokasi saat ini: <span className="font-semibold">{currentLocation}</span>

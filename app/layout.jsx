@@ -3,7 +3,10 @@ import "@styles/globals.css";
 export const metadata = {
   title: 'SkyView',
   description: 'SkyView is a weather app that shows the current weather and air quality index of a location.',
-}
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
 
 export default function RootLayout({ children }) {
   return (

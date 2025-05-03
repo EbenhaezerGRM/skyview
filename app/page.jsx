@@ -1,7 +1,11 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { fetchWeatherData, fetchAirQualityData } from "@/lib/api";
-import Navbar from "@/components/Navbar"; // ✅ Tambahkan ini
+import {
+  fetchAllDataByCity,
+  fetchAllDataByCoords,
+} from "@/lib/api";
+import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import WeatherCard from "@/components/WeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
@@ -14,42 +18,39 @@ const HomePage = () => {
   const [displayLocation, setDisplayLocation] = useState("Bekasi");
   const [weather, setWeather] = useState(null);
   const [airQuality, setAirQuality] = useState(null);
+  const [isFallbackLocation, setIsFallbackLocation] = useState(false);
+  const [notFoundCity, setNotFoundCity] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("selectedLocation");
+      if (saved) setCity(saved);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchWeatherData(city);
-        if (data) {
-          setWeather(data);
-          if (!city.includes(",")) {
-            setDisplayLocation(data.address || "Lokasi Tidak Diketahui");
-          }
-
-          if (data.latitude && data.longitude) {
-            const airQualityData = await fetchAirQualityData(data.latitude, data.longitude);
-            setAirQuality(airQualityData);
-          }
-        }
+        const { weather, airQuality, displayLocation } = await fetchAllDataByCity(city);
+        setWeather(weather);
+        setAirQuality(airQuality);
+        setDisplayLocation(displayLocation);
+        setIsFallbackLocation(false);
+        setNotFoundCity("");
+        localStorage.setItem("selectedLocation", city);
       } catch (error) {
-        console.error("Error fetching weather data:", error);
+        console.error("Error fetching data:", error);
+        setWeather(null);
+        setAirQuality(null);
+        setDisplayLocation("");
+        setNotFoundCity(city); 
       }
     };
 
-    fetchData();
-  }, [city]);
-
-  const reverseGeocode = async (latitude, longitude) => {
-    try {
-      const response = await fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=id`
-      );
-      const data = await response.json();
-      return data.city || data.locality || "Lokasi Tidak Diketahui";
-    } catch (error) {
-      console.error("Gagal mendapatkan nama lokasi:", error);
-      return "Lokasi Tidak Diketahui";
+    if (city) {
+      fetchData();
     }
-  };
+  }, [city]);
 
   const handleUseCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -57,11 +58,19 @@ const HomePage = () => {
         async (position) => {
           const { latitude, longitude } = position.coords;
           try {
-            const cityName = await reverseGeocode(latitude, longitude);
-            setCity(`${latitude},${longitude}`);
-            setDisplayLocation(cityName);
+            const { weather, airQuality, displayLocation } =
+              await fetchAllDataByCoords(latitude, longitude);
+
+            const coordString = `${latitude},${longitude}`;
+            setWeather(weather);
+            setAirQuality(airQuality);
+            setDisplayLocation(displayLocation);
+            setIsFallbackLocation(displayLocation === "Lokasi Tidak Diketahui");
+            setNotFoundCity("");
+            localStorage.setItem("selectedLocation", displayLocation);
           } catch (error) {
-            console.error("Gagal mendapatkan lokasi:", error);
+            console.error("Gagal mendapatkan data lokasi:", error);
+            alert("Gagal mendapatkan data berdasarkan lokasi.");
           }
         },
         (error) => {
@@ -76,22 +85,22 @@ const HomePage = () => {
 
   return (
     <>
-      <Navbar /> {/* ✅ Tambahkan Navbar di atas */}
+      <Navbar />
       <main className="max-w-4xl mx-auto p-6 space-y-8 bg-gray-50 mt-6 rounded-lg shadow-md">
         <SearchBar
-          onSearch={(newCity) => {
-            setCity(newCity);
-            setDisplayLocation(newCity);
-          }}
+          onSearch={(newCity) => setCity(newCity)}
           onUseCurrentLocation={handleUseCurrentLocation}
+          currentLocation={displayLocation}
         />
+
+        {notFoundCity && (
+          <p className="text-red-500 font-semibold text-center">
+            Lokasi: {notFoundCity} tidak ditemukan
+          </p>
+        )}
 
         {weather && (
           <>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Lokasi saat ini: <span className="text-blue-600">{displayLocation}</span>
-            </h2>
-
             <div className="space-y-6">
               <WeatherCard weather={weather.currentConditions} />
               <HourlyForecast hours={weather.days[0]?.hours || []} />
