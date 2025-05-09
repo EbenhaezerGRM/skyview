@@ -1,8 +1,8 @@
 import "@styles/globals.css";
 
 export const metadata = {
-  title: 'SkyView',
-  description: 'SkyView is a weather app that shows the current weather and air quality index of a location.',
+  title: 'Skywise',
+  description: 'Skywise is a weather app that shows the current weather and air quality index of a location.',
   icons: {
     icon: '/favicon.ico',
   },
